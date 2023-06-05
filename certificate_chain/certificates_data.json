@@ -1,0 +1,38 @@
+[
+    {
+        "id": "root",
+        "common_name": "Root Certificate",
+        "organization_name": "org",
+        "country_name": "ro",
+        "private_key_path": "./certificate_chain/oot_private_key.pem",
+        "certificate_path": "./certificate_chain/root_certificate.pem",
+        "validity_period": 365
+    },
+    {
+        "id": "intermediate_1",
+        "common_name": "Intermediate Certificate 1",
+        "organization_name": "org",
+        "country_name": "ro",
+        "private_key_path": "./certificate_chain/priv-1.pem",
+        "certificate_path": "./certificate_chain/cert-1.pem",
+        "validity_period": 365
+    },
+    {
+        "id": "intermediate_2",
+        "common_name": "Intermediate Certificate 2",
+        "organization_name": "org",
+        "country_name": "ro",
+        "private_key_path": "./certificate_chain/priv-2.pem",
+        "certificate_path": "./certificate_chain/cert-2.pem",
+        "validity_period": 365
+        },
+    {
+        "id": "final_intermediate",
+        "common_name": "Final Intermediate Certificate",
+        "organization_name": "org",
+        "country_name": "ro",
+        "private_key_path": "./certificate_chain/priv-3.pem",
+        "certificate_path": "./certificate_chain/cert-3.pem",
+        "validity_period": 365
+        }
+]
