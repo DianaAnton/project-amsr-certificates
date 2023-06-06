@@ -326,17 +326,3 @@ def revoke_certificate(certificate_path: str, private_key_path: str, crl_path: s
 
     print("Certificate revoked successfully!")
 # ------------------------------------------------------------------------------#
-
-# # Usage
-# certificate_path = 'certificate.pem'
-# private_key_path = 'private_key.pem'
-# crl_path = 'crl.pem'
-# revoked_cert_path = 'revoked_certificate.pem'
-
-# Usage
-# certificate_path = 'certificate.pem'
-# private_key_path = 'private_key.pem'
-# extended_certificate_path = 'extended_certificate.pem'
-# validity_days = 30
-
-# extend_certificate_life(certificate_path, private_key_path, extended_certificate_path, validity_days)
