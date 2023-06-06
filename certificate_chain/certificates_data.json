@@ -4,7 +4,7 @@
         "common_name": "Root Certificate",
         "organization_name": "org",
         "country_name": "ro",
-        "private_key_path": "./certificate_chain/oot_private_key.pem",
+        "private_key_path": "./certificate_chain/root_private_key.pem",
         "certificate_path": "./certificate_chain/root_certificate.pem",
         "validity_period": 365
     },
@@ -25,7 +25,7 @@
         "private_key_path": "./certificate_chain/priv-2.pem",
         "certificate_path": "./certificate_chain/cert-2.pem",
         "validity_period": 365
-        },
+    },
     {
         "id": "final_intermediate",
         "common_name": "Final Intermediate Certificate",
@@ -34,6 +34,7 @@
         "private_key_path": "./certificate_chain/priv-3.pem",
         "certificate_path": "./certificate_chain/cert-3.pem",
         "validity_period": 365
+<<<<<<< HEAD
  
     }
 ]
@@ -128,3 +129,7 @@ def generate_certificate(subject_name, issuer_name, issuer_private_key, issuer_c
         )
 
     return private_key, certificate
+=======
+    }
+]
+>>>>>>> 0141f04 (fixed generating chain certs)
