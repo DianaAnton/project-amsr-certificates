@@ -1,9 +1,10 @@
 from cryptography import x509
 from cryptography.x509.oid import NameOID, ExtensionOID
 from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.primitives.hashes import SHA256
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend
-import datetime
+import datetime, binascii
 
 # ------------------------------------------------------------------------------#
 
@@ -54,19 +55,27 @@ def generate_certificate(
     builder = builder.public_key(public_key)
 
     if issuer_certificate:
-        # Create AuthorityKeyIdentifier extension manually
-        issuer_subject_key_identifier = (
-            issuer_certificate.extensions.get_extension_for_oid(
-                ExtensionOID.SUBJECT_KEY_IDENTIFIER
-            ).value
+        # Retrieve the issuer's public key
+        issuer_public_key = issuer_certificate.public_key()
+
+        # Compute subject key identifier from the issuer's public key
+        issuer_public_key_bytes = issuer_public_key.public_bytes(
+            encoding=serialization.Encoding.DER,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
+        )
+        issuer_subject_key_identifier = x509.SubjectKeyIdentifier.from_public_key(
+            issuer_public_key_bytes
         )
 
-        authority_key_identifier = x509.AuthorityKeyIdentifier(
-            key_identifier=issuer_subject_key_identifier,
-            authority_cert_issuer=None,
-            authority_cert_serial_number=None,
+        builder = builder.add_extension(
+            issuer_subject_key_identifier,
+            critical=False,
         )
-        builder = builder.add_extension(authority_key_identifier, critical=False)
+        builder = builder.add_extension(
+            x509.AuthorityKeyIdentifier.from_issuer_public_key(issuer_public_key),
+            critical=False,
+        )
+
         certificate = builder.sign(
             private_key=issuer_private_key,
             algorithm=hashes.SHA256(),
@@ -234,15 +243,22 @@ def generate_certificate_chain(
                 certificate.get("certificate_path"),
                 certificate.get("validity_period"),
             )
+            print("\n\n\n\n\n\n\n\n")
+            print(root_certificate.subject)
+            print(root_certificate)
+            print(root_private_key)
+            print("\n\n\n\n\n\n\n\n")
 
             # Set the issuer private key and certificate to the root certificate
             issuer_private_key = root_private_key
             issuer_certificate = root_certificate
         else:
             # Generate intermediate certificates and chain them to the root certificate
+            print("\n\n\n\n\n\n\n\n")
             print(issuer_certificate.subject)
             print(issuer_private_key)
             print(issuer_certificate)
+            print("\n\n\n\n\n\n\n\n")
             private_key, certificate = generate_certificate(
                 certificate.get("common_name"),
                 certificate.get("organization_name"),
