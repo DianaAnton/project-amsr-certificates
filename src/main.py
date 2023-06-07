@@ -1,4 +1,3 @@
-# import the certificate_fucntions.py file
 from certificate_functions import (
     generate_certificate,
     generate_certificate_chain,
@@ -8,19 +7,20 @@ from certificate_functions import (
 )
 import json, datetime
 
-# declare the main function
+# ------------------------------------------------------------------------------#
 
 
 def main():
     # create a menu for the user to select from
     print("1. Generate a self-signed certificate")
     print("2. Generate a certificate chain")
-    print("3. Extend the life of a certificate")
-    print("4. Revoke a certificate")
-    print("5. Read certificate data")
+    print("3. Read certificate data")
+    print("4. Extend the life of a certificate")
+    print("5. Revoke a certificate")
     print("6. Exit")
     # take the user input
     choice = int(input("Enter your choice: "))
+
     # if the user enters 1
     if choice == 1:
         # # take the user input for the common name
@@ -60,13 +60,16 @@ def main():
             certificate_path,
             validity_period,
         )
+
     # if the user enters 2
     elif choice == 2:
         # # get the user input for the path of the json configuration file
         # json_configuration_file_path = input(
         #     "Enter the path of the json configuration file: "
         # )
+
         json_configuration_file_path = "./certificate_chain/certificates_data.json"
+
         # print the path of the json configuration file
         print("Json configuration file path: " + json_configuration_file_path)
 
@@ -76,8 +79,23 @@ def main():
 
         # generate a certificate chain
         generate_certificate_chain(certificates_data)
+
     # if the user enters 3
     elif choice == 3:
+        # get user input for the certificate path
+        # certificate_path = input("Enter the certificate path: ")
+
+        certificate_path = "./certs/extended_root_certificate_1.pem"
+        # certificate_path = './crl/revoked_cert.pem'
+
+        # print the certificate path
+        print("Certificate path: " + certificate_path)
+
+        # read certificate data
+        read_certificate_data(certificate_path)
+
+    # if the user enters 4
+    elif choice == 4:
         # # take the user input for the certificate path
         # certificate_path = input("Enter the certificate path: ")
         # # take the user input for the private key path
@@ -87,10 +105,10 @@ def main():
         #     "Enter the extended certificate path: ")
         # # take the user input for the validity days
         # validity_days = int(input("Enter the validity days: "))
-        # generate some test values to be hardcoded
-        certificate_path = './certs/root_certificate_1.pem'
-        private_key_path = './certs/root_private_key_1.pem'
-        extended_certificate_path = './certs/extended_root_certificate_1.pem'
+
+        certificate_path = "./certs/root_certificate_1.pem"
+        private_key_path = "./certs/root_private_key_1.pem"
+        extended_certificate_path = "./certs/extended_root_certificate_1.pem"
         validity_days = 665
 
         # print all the values
@@ -100,9 +118,12 @@ def main():
         print("Validity days: " + str(validity_days))
 
         # extend the life of the certificate
-        extend_certificate_life(certificate_path, private_key_path, extended_certificate_path, validity_days)
-    # if the user enters 4
-    elif choice == 4:
+        extend_certificate_life(
+            certificate_path, private_key_path, extended_certificate_path, validity_days
+        )
+
+    # if the user enters 5
+    elif choice == 5:
         # # take the user input for the certificate path
         # certificate_path = input("Enter the certificate path: ")
         # # take the user input for the private key path
@@ -122,37 +143,36 @@ def main():
         #     revocation_year, revocation_month, revocation_day
         # )
 
-        certificate_path = './certs/extended_root_certificate_1.pem'
-        private_key_path = './certs/root_private_key_1.pem'
-        crl_path = './crl/crl.pem'
-        revoked_cert_path = './crl/revoked_cert.pem'
+        certificate_path = "./certs/extended_root_certificate_1.pem"
+        private_key_path = "./certs/root_private_key_1.pem"
+        crl_path = "./crl/crl.pem"
+        revoked_cert_path = "./crl/revoked_cert.pem"
         revocation_date = datetime.datetime(2023, 6, 6)
 
         # revoke a certificate
-        revoke_certificate(certificate_path, private_key_path, crl_path, revoked_cert_path, revocation_date)
-    elif choice == 5:
-        # get user input for the certificate path
-        # certificate_path = input("Enter the certificate path: ")
+        revoke_certificate(
+            certificate_path,
+            private_key_path,
+            crl_path,
+            revoked_cert_path,
+            revocation_date,
+        )
 
-        certificate_path = './certs/extended_root_certificate_1.pem'
-        # certificate_path = './crl/revoked_cert.pem'
-
-        # print the certificate path
-        print("Certificate path: " + certificate_path)
-
-        # read certificate data
-        read_certificate_data(certificate_path)
-    # if the user enters 5
+    # if the user enters 6
     elif choice == 6:
         # exit the program
         exit()
+
     # if the user enters anything else
     else:
         # print an error message
         print("Invalid choice!")
 
+
+# ------------------------------------------------------------------------------#
 # call the main function
 if __name__ == "__main__":
     while True:
         main()
     exit()
+# ------------------------------------------------------------------------------#

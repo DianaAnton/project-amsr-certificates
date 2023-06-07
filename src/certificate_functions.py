@@ -16,7 +16,6 @@ def generate_certificate(
     private_key_path: str,
     certificate_path: str,
     validity_period: int,
-    issuer_name="",
     issuer_private_key="",
     issuer_certificate=None,
     serial_number=0,
@@ -56,17 +55,19 @@ def generate_certificate(
     builder = builder.public_key(public_key)
 
     if issuer_certificate:
-       # Retrieve the issuer's public key
+        # Retrieve the issuer's public key
         issuer_public_key = issuer_certificate.public_key()
 
         # Compute subject key identifier from the issuer's public key
-        issuer_public_key_bytes = issuer_public_key.public_bytes(
-            encoding=serialization.Encoding.DER,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo
+        # issuer_public_key_bytes = issuer_public_key.public_bytes(
+        #     encoding=serialization.Encoding.DER,
+        #     format=serialization.PublicFormat.SubjectPublicKeyInfo,
+        # )
+        issuer_subject_key_identifier = x509.SubjectKeyIdentifier.from_public_key(
+            issuer_public_key
         )
-        issuer_subject_key_identifier = x509.SubjectKeyIdentifier.from_public_key(issuer_public_key)
 
-        if serial_number == 0:   
+        if serial_number == 0:
             # Self-sign the root certificate
             builder = builder.serial_number(x509.random_serial_number()).add_extension(
                 x509.BasicConstraints(ca=True, path_length=None), critical=True
@@ -76,13 +77,10 @@ def generate_certificate(
                 x509.BasicConstraints(ca=True, path_length=None), critical=True
             )
 
-        builder = builder.add_extension(
-            issuer_subject_key_identifier,
-            critical=False
-        )
+        builder = builder.add_extension(issuer_subject_key_identifier, critical=False)
         builder = builder.add_extension(
             x509.AuthorityKeyIdentifier.from_issuer_public_key(issuer_public_key),
-            critical=False
+            critical=False,
         )
         certificate = builder.sign(
             private_key=issuer_private_key,
@@ -159,13 +157,13 @@ def generate_certificate_chain(
             # Load issuer private key and certificate
             with open(issuer_private_key_path, "rb") as f:
                 issuer_private_key = serialization.load_pem_private_key(
-                    f.read(),
-                    password=None,
-                    backend=default_backend()
+                    f.read(), password=None, backend=default_backend()
                 )
 
             with open(issuer_certificate_path, "rb") as f:
-                issuer_certificate = x509.load_pem_x509_certificate(f.read(), default_backend())
+                issuer_certificate = x509.load_pem_x509_certificate(
+                    f.read(), default_backend()
+                )
 
             # Generate intermediate/final intermediate certificate
             generate_certificate(
@@ -178,17 +176,24 @@ def generate_certificate_chain(
                 issuer_name=issuer_name,
                 issuer_private_key=issuer_private_key,
                 issuer_certificate=issuer_certificate,
-                serial_number=serial_number
+                serial_number=serial_number,
             )
 
     for i, cert_data in enumerate(certificate_chain):
         # load each certificate and private key and print the common name and the issuer
         with open(cert_data["certificate_path"], "rb") as f:
             certificate = x509.load_pem_x509_certificate(f.read(), default_backend())
-            print("Certificate common name:", certificate.subject.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value)
-            print("Certificate issuer:", certificate.issuer.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value)
+            print(
+                "Certificate common name:",
+                certificate.subject.get_attributes_for_oid(NameOID.COMMON_NAME)[
+                    0
+                ].value,
+            )
+            print(
+                "Certificate issuer:",
+                certificate.issuer.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value,
+            )
             print("------------------------------------------------------------")
-
 
     print("Certificate chain generated successfully!")
 
@@ -200,7 +205,7 @@ def read_certificate_data(certificate_path: str):
     # define a function that loads the certificate from the file and reads all the data from it
     with open(certificate_path, "rb") as f:
         certificate = x509.load_pem_x509_certificate(f.read(), default_backend())
-        # print all the data neatly 
+        # print all the data neatly
         print("------------------------------------------------------------")
         print("Certificate data:")
         print("Version:", certificate.version)
@@ -215,11 +220,15 @@ def read_certificate_data(certificate_path: str):
         print("Extensions:", certificate.extensions)
         print("------------------------------------------------------------")
 
+
 # ------------------------------------------------------------------------------#
 
 
 def extend_certificate_life(
-    certificate_path: str, private_key_path: str, extended_certificate_path: str, validity_days: int
+    certificate_path: str,
+    private_key_path: str,
+    extended_certificate_path: str,
+    validity_days: int,
 ):
     # Load the certificate and private key
     with open(certificate_path, "rb") as f:
@@ -280,10 +289,18 @@ def extend_certificate_life(
         f.write(extended_certificate_pem)
 
     print("Certificate extended successfully!")
+
+
 # ------------------------------------------------------------------------------#
 
 
-def revoke_certificate(certificate_path: str, private_key_path: str, crl_path: str, revoked_cert_path: str, revocation_date: datetime.datetime):
+def revoke_certificate(
+    certificate_path: str,
+    private_key_path: str,
+    crl_path: str,
+    revoked_cert_path: str,
+    revocation_date: datetime.datetime,
+):
     # Load the certificate and private key
     with open(certificate_path, "rb") as f:
         certificate = x509.load_pem_x509_certificate(f.read(), default_backend())
@@ -325,4 +342,6 @@ def revoke_certificate(certificate_path: str, private_key_path: str, crl_path: s
         f.write(certificate.public_bytes(serialization.Encoding.PEM))
 
     print("Certificate revoked successfully!")
+
+
 # ------------------------------------------------------------------------------#
