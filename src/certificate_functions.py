@@ -292,6 +292,26 @@ def extend_certificate_life(
 # ------------------------------------------------------------------------------#
 
 
+def read_revocation_list(crl_path: str):
+    # load the CRL from the file
+    with open(crl_path, "rb") as f:
+        crl = x509.load_pem_x509_crl(f.read(), default_backend())
+        # read the data from the CRL
+        print("\n------------------------------------------------------------")
+        print("CRL data:")
+        print("Issuer:", crl.issuer)
+        print("Last update:", crl.last_update)
+        print("Next update:", crl.next_update)
+        print("Revoked certificates:")
+        for revoked_cert in crl:
+            print("Serial number:", revoked_cert.serial_number)
+            print("Revocation date:", revoked_cert.revocation_date)
+        print("------------------------------------------------------------")
+
+
+# ------------------------------------------------------------------------------#
+
+
 def revoke_certificate(
     certificate_path: str,
     private_key_path: str,
@@ -340,6 +360,8 @@ def revoke_certificate(
         f.write(certificate.public_bytes(serialization.Encoding.PEM))
 
     print("Certificate revoked successfully!")
+
+    read_revocation_list(crl_path)
 
 
 # ------------------------------------------------------------------------------#

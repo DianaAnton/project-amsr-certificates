@@ -12,12 +12,15 @@ import json, datetime
 
 def main():
     # create a menu for the user to select from
+    print("\n=============================================")
+    print("Select an option from the menu below:")
     print("1. Generate a self-signed certificate")
     print("2. Generate a certificate chain")
     print("3. Read certificate data")
     print("4. Extend the life of a certificate")
     print("5. Revoke a certificate")
     print("6. Exit")
+    print("=============================================\n")
     # take the user input
     choice = int(input("Enter your choice: "))
 
