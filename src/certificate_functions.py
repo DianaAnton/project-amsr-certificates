@@ -150,7 +150,6 @@ def generate_certificate_chain(
             )
         else:
             issuer_cert_data = certificate_chain[i - 1]
-            issuer_name = issuer_cert_data["common_name"]
             issuer_private_key_path = issuer_cert_data["private_key_path"]
             issuer_certificate_path = issuer_cert_data["certificate_path"]
 
@@ -173,7 +172,6 @@ def generate_certificate_chain(
                 private_key_path,
                 certificate_path,
                 validity_period,
-                issuer_name=issuer_name,
                 issuer_private_key=issuer_private_key,
                 issuer_certificate=issuer_certificate,
                 serial_number=serial_number,
